@@ -7,4 +7,12 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'app';
+  items = [
+    {
+      name: 'api reference'
+    },
+    {
+      name: 'current conditions'
+    }
+  ]
 }

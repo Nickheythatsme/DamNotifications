@@ -24,7 +24,7 @@ router.get('/data/all', (req, res) => {
     .find( {})
     .sort(
     {
-        "gage_height.dateTime": -1
+        "dateTime": -1
     })
     .exec((err, data_points) => {
         if(err) {

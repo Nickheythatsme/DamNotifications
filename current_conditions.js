@@ -18,16 +18,13 @@ class ValueUpdater {
         this.emitter = new events.EventEmitter();
 
         // Create new schemas
-        this.data_point = mongoose.model('data_point', new mongoose.Schema({
-            gage_height: {
-                value: Number,
-                dateTime: Date
-            },
-            discharge: {
-                value: Number,
-                dateTime: Date
-            }
-        }));
+        this.data_point = mongoose.model(
+            'data_point', new mongoose.Schema({
+                    variable: String,
+                    value: Number,
+                    dateTime: Date
+                })
+            );
 
         this.data_info = mongoose.model('data_info', new mongoose.Schema({
             site_info: {
@@ -53,11 +50,11 @@ class ValueUpdater {
     }
 
     // Wrapper for the parseValues function
-    parseValues(json){
-        return {
-            gage_height: this.parseValuesImp(json, 1),
-            discharge: this.parseValuesImp(json, 0)
-        }
+    parseValues(json) {
+        return [
+            this.parseValuesImp(json, 1),
+            this.parseValuesImp(json, 0)
+        ]
     }
 
     // Parse VALUE info from a variable (either is gage height or not)
@@ -65,6 +62,7 @@ class ValueUpdater {
         let to_ret = null;
         try{
             to_ret = {
+                'variable': is_gage_height ? 'gage_height' : 'discharge', // set the variable name
                 'value' : json['value']['timeSeries'][is_gage_height]['values'][0]['value'][0]['value'],
                 'dateTime' : json['value']['timeSeries'][is_gage_height]['values'][0]['value'][0]['dateTime'],
                 'units' : json['value']['timeSeries'][is_gage_height]['variable']['unit']['unitCode']
@@ -125,22 +123,18 @@ class ValueUpdater {
     }
 
     // Log values to current.json and on mongodb
-    logValues(values, callback) {
-        this.current = values;
+    logValue(value, callback) {
 
         // Create new data point on mongodb
         var new_point = new this.data_point();
-        new_point.gage_height = {
-                value: values.gage_height.value,
-                dateTime: values.gage_height.dateTime
-        };
-        new_point.discharge = {
-                value: values.discharge.value,
-                dateTime: values.discharge.dateTime
-        };
+        
+        new_point.variable = value.variable;
+        new_point.value = value.value;
+        new_point.dateTime = value.dateTime;
+
         new_point.save( err => { // Save the new data point, make the callback
             if(err) console.log('Error adding new data point: ' + new_point);
-            callback(err, values);
+            callback(err, new_point);
         });
     }
 
@@ -148,12 +142,15 @@ class ValueUpdater {
         this.makeRequest( (err, body) => {
             if (err) console.log(err);
             else {
-                let values = this.parseValues(body);
-                this.logValues(values, (err, values) => {
-                    if(err) console.log(err);
-                    else console.log('Added data_point');
+                let values = this.parseValues(body); // Add functions here to expand to different variable types
+                this.current = values; // Set the current
+                for(var i=0; i < values.length; ++i) {
+                    this.logValue(values[i], (err, value) => {
+                        if(err) console.log(err);
+                        else console.log('Added data point for ' + value.variable);
+                    });
                     this.emitter.emit('updateLoop');
-                });
+                }
             }
         });
     }
