@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 
 var mongo_uri = fs.readFileSync(path.join(__dirname,'mongodb_uri.txt'), {encoding: 'UTF8'});
+mongo_uri = mongo_uri.replace('\n','');
 
 mongoose.connect(mongo_uri, err => {
     if(err) {

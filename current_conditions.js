@@ -1,16 +1,21 @@
 const fs = require('fs');
 const path = require('path');
+var events = require('events');
 const https = require('https');
 const mongoose = require('./init_mongoose');
+const sleep = require('system-sleep');
 
+// USGS json URL
 const data_uri = "https://waterservices.usgs.gov/nwis/iv/?format=json&sites=14220500&parameterCd=00060,00065&siteStatus=all";
 
 class ValueUpdater {
 
-    constructor(uri = "https://waterservices.usgs.gov/nwis/iv/?format=json&sites=14220500&parameterCd=00060,00065&siteStatus=all") {
+    constructor(uri = data_uri) {
         this.current = null;
         this.uri = uri;
-        this.updateFrequency = 15 * 1000 * 60; // 15 minutes
+        this.frequency = 15 * 1000 * 60; // 15 minutes
+
+        this.emitter = new events.EventEmitter();
 
         // Create new schemas
         this.data_point = mongoose.model('data_point', new mongoose.Schema({
@@ -41,10 +46,6 @@ class ValueUpdater {
                 }
             }
         }));
-    }
-
-    set frequency(minutes) {
-        this.updateFrequency = minutes * 1000 * 60;
     }
 
     get site_info() {
@@ -121,7 +122,6 @@ class ValueUpdater {
                 callback(new Error(err), null);
             });
         });
-
     }
 
     // Log values to current.json and on mongodb
@@ -129,45 +129,61 @@ class ValueUpdater {
         this.current = values;
 
         // Create new data point on mongodb
-        this.data_point.create(
-            {
-                gage_height: {
-                    value: values.gage_height.value,
-                    dateTime: values.gage_height.dateTime
-                },
-                discharge: {
-                    value: values.discharge.value,
-                    dateTime: values.discharge.dateTime
-                }
-            },
-            (err) => {
-                if(err) console.log(err);
-                else console.log('created new data pont');
-                callback(err, values);
-            }
-        )
+        var new_point = new this.data_point();
+        new_point.gage_height = {
+                value: values.gage_height.value,
+                dateTime: values.gage_height.dateTime
+        };
+        new_point.discharge = {
+                value: values.discharge.value,
+                dateTime: values.discharge.dateTime
+        };
+        new_point.save( err => { // Save the new data point, make the callback
+            if(err) console.log('Error adding new data point: ' + new_point);
+            callback(err, values);
+        });
     }
 
-    update(callback) {
+    update() {
         this.makeRequest( (err, body) => {
-            if (err) {
-                callback(err, null);
-            }
+            if (err) console.log(err);
             else {
                 let values = this.parseValues(body);
-                this.logValues(values, callback);
+                this.logValues(values, (err, values) => {
+                    if(err) console.log(err);
+                    else console.log('Added data_point');
+                    this.emitter.emit('updateLoop');
+                });
             }
         });
     }
+
+    // Wrapper for update function
+    updateLoop() {
+        setTimeout( () => {
+           this.update();
+        }, this.frequency);
+    }
+
+    doUpdate(bool=true) {
+        if(bool == false)
+            this.emitter.removeAllListeners('updateLoop');
+        else {
+            this.emitter.addListener('updateLoop', () => {
+                this.updateLoop();
+            });
+            this.update();
+        }
+    }
 }
+
 
 
 var updater = new ValueUpdater();
-updater.update( (err, values) => {
-    if (err) console.log(err);
-    else console.log(values)
-});
+updater.doUpdate();
 
-module.exports = {
-    current : {gage_height:'7ft', discharge:'2000ft^3/sec'}
-}
+setTimeout( () => {
+    updater.doUpdate(false);
+}, 6000);
+
+module.exports = updater;
