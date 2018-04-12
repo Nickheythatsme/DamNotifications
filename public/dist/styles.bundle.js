@@ -3,7 +3,7 @@ webpackJsonp(["styles"],{
 /***/ "./node_modules/raw-loader/index.js!./node_modules/postcss-loader/lib/index.js??embedded!./node_modules/sass-loader/lib/loader.js??ref--8-3!./src/styles.scss":
 /***/ (function(module, exports) {
 
-module.exports = "/* You can add global styles to this file, and also import other style files */\n"
+module.exports = "* {\n  font-family: Verdana, Geneva, Tahoma, sans-serif; }\n\nbody {\n  background-color: grey; }\n\nnav {\n  margin-bottom: 1em; }\n\nnav ul {\n  list-style: none;\n  background-color: #356bc4;\n  padding: 1em 0 1em 0; }\n\nnav ul li {\n  display: inline;\n  background-color: #254a88;\n  padding: 1em;\n  margin: 0 .5em 0 0; }\n\nnav a {\n  background-color: #356bc4;\n  color: white;\n  text-decoration: none; }\n"
 
 /***/ }),
 

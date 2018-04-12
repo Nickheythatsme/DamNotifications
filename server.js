@@ -21,7 +21,7 @@ function handleError(req, res, err){
 // API routing ===============================
 router.get('/data/all', (req, res) => {
     currentConditions.data_point
-    .find( {})
+    .find( {} )
     .sort(
     {
         "dateTime": -1
