@@ -105,11 +105,6 @@ class ValueUpdater {
 
             // Catch the data after it's finished downloading
             res.on('end', () => {
-                fs.writeFileSync( 
-                    path.join(
-                        __dirname, 
-                        'public/data/current.json'), 
-                        String(body));
                 body = JSON.parse(body);
                 callback(null, body);
             });

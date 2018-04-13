@@ -1,7 +1,7 @@
 console.log('test');
 
 // var base_href = 'http://localhost:8080/'
-var base_href = 'http://dam-notifications.appspot.com/';
+var base_href = window.location.href;
 
 
 // Old compatibility code, no longer needed.
@@ -21,7 +21,7 @@ function makeRequest() {
         return false;
     }
     httpRequest.onloadend = makeDischargeGraph;
-    httpRequest.open('GET', url + 'api/data?variable=discharge&time='+hours);
+    httpRequest.open('GET', base_href + 'api/data?variable=discharge&time='+hours);
     httpRequest.send();
 
 }
@@ -41,7 +41,7 @@ function makeDischargeGraph() {
 
     httpRequest = new XMLHttpRequest();
     httpRequest.onloadend = makeGageHeightGraph;
-    httpRequest.open('GET', url + 'api/data?variable=gage_height&time='+hours);
+    httpRequest.open('GET', base_href + 'api/data?variable=gage_height&time='+hours);
     httpRequest.send();
 }
 
