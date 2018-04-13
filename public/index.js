@@ -1,6 +1,7 @@
 console.log('test');
 
-var url = 'http://localhost:8080/'
+// var base_href = 'http://localhost:8080/'
+var base_href = 'http://dam-notifications.appspot.com/';
 
 
 // Old compatibility code, no longer needed.
