@@ -36,36 +36,31 @@ router.get('/data/all', (req, res) => {
     });
 });
 
+// Return the current data for all variables 
 router.get('/current', (req, res) => {
     res.json(currentConditions.current);
 });
 
-// Send all available file names as JSON
-router.get('/data', (req, res) => {
-    fs.readdir( path.join(__dirname, 'public/data'), (err, files) => {
-        if (err) {
-                console.log(err);
-                res.send('error');
-        }
-        else res.json(files);
-    });
-});
-
-
-// Send 
-router.route('/data/:file_name', (req, res) =>{
-    console.log('get: ' + req.params);
-    fs.exists( path.join(__dirname, 'public/data/' + req.params.file_name), (exists) => {
-        if (exists)
-            res.sendFile(path.join(__dirname, 'public/data/' + req.params.file_name));
-        else {
-            res.json({message:'File does not exist'});
-            res.status(404);
+// TODO create function to send a csv from all the data points
+const MAX_TIME_MS = 1*1000*60*60; // one hour
+router.get('/csv/gage_height', (req,res) =>{
+    // TODO check the date of the file, make a new one if it's too old
+    var p = path.join(__dirname, 'temp/gage_height.csv');
+    fs.exists(p, exists => {
+        if(exists) {
+            fs.stat(p,(err, stats) => {
+                if (stats.birthtime > MAX_TIME
+            });
         }
     });
-});
+})
 
-// Add api routing to the app on the '/api' param
+router.get('/csv/gage_height', (req,res) =>{
+
+})
+
+
+// Add the api routing to the app on the '/api' param
 app.use('/api', router);
 
 // Route all other traffic to frontend
