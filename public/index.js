@@ -1,8 +1,7 @@
 console.log('test');
 
-// var base_href = 'http://localhost:8080/'
-var base_href = window.location.href;
-
+// Get the base href
+var base_href = window.location.href.replace(window.location.pathname,'/');
 
 // Old compatibility code, no longer needed.
 var httpRequest;
