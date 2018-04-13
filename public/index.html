@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+
+<title>Dam Notifications</title>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="Keywords" content="Dam,notifications,data">
+<meta name="Description" content="Dam notifications for dams near woodland WA">
+
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<body>
+    <h1 align="center">Dam notifications</h1>
+    <div class="container">
+        <p>This monitors water and dam information near LEWIS RIVER AT ARIEL, WA</p>
+        <p>Information is pulled every 15 minutes from a link provided by the <a href="https://waterservices.usgs.gov/">USGS site</a></p>
+        <ul>
+            <li class="graph_container">
+                <h2>Dam Discharge</h2>
+                <a>This measures the discharge from the dam</a>
+                <div class="graph" id="discharge"></div>
+            </li>
+            <li class="graph_container">
+                <h2>Dam Gage Height</h2>
+                <a>This measures the height from the top of the water to the top of the dam</a>
+                <div class="graph" id="gage_height"></div>
+            </li>
+        </ul>
+    </div>
+</body>
+
+<script src="index.js"></script>
+
+</head>
+</html>

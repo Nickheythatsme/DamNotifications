@@ -138,6 +138,7 @@ class ValueUpdater {
         });
     }
 
+    // Commence the update
     update() {
         this.makeRequest( (err, body) => {
             if (err) console.log(err);
@@ -162,6 +163,7 @@ class ValueUpdater {
         }, this.frequency);
     }
 
+    // Call the update function, listen for the update call
     doUpdate(bool=true) {
         if(bool == false)
             this.emitter.removeAllListeners('updateLoop');
