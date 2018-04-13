@@ -49,7 +49,8 @@ router.get('/csv/gage_height', (req,res) =>{
     fs.exists(p, exists => {
         if(exists) {
             fs.stat(p,(err, stats) => {
-                if (stats.birthtime > MAX_TIME
+                if (stats.birthtime - Date.now() > MAX_TIME)
+                    makeNewCSV('gage_height');
             });
         }
     });
