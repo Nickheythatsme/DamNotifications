@@ -58,3 +58,4 @@ typings/
 .env
 
 mongodb_uri.txt
+email.json
