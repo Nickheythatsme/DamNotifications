@@ -4,7 +4,6 @@ var path = require('path');
 
 var auth = fs.readFileSync(path.join(__dirname,'email.json'));
 auth = JSON.parse(auth);
-console.log(auth);
 
 var transporter = mailer.createTransport({
     service: 'gmail',
